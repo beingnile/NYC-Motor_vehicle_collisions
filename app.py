@@ -2,14 +2,23 @@
 Motor vehicle collisions in New York City
 """
 
-import streamlit as st
-import pandas as pd
 import numpy as np
-import pydeck as pdk
+import pandas as pd
 import plotly.express as px
+import pydeck as pdk
+import streamlit as st
+import tarfile
 
 
+@st.cache(persist=True)
+def uncompress():
+    with tarfile.open("Motor_Vehicle_Collisions_-_Crashes.csv.tar.gz") as f:
+        f.extractall(".")
+
+
+uncompress()
 DATA_URL = ("Motor_Vehicle_Collisions_-_Crashes.csv")
+#DATA_URL = ("https://data.cityofnewyork.us/resource/h9gi-nx95.json")
 st.title("Motor Vehicle Collisions in New York City")
 st.markdown("This is a Streamlit dashboard that can be used \
             to analyze motor vehicle collisions in NYC")
@@ -26,8 +35,8 @@ def load_data(nrows):
         nrows: The number of rows to load
     """
     data = pd.read_csv(DATA_URL,
-                       nrows=nrows,
-                       parse_dates=[['CRASH_DATE', 'CRASH_TIME']])
+                        nrows=nrows,
+                        parse_dates=[['CRASH_DATE', 'CRASH_TIME']])
     data.dropna(subset=['LATITUDE', 'LONGITUDE'], inplace=True)
     lowercase = lambda x: str(x).lower()
     data.rename(lowercase, axis='columns', inplace=True)
