@@ -49,7 +49,7 @@ original_data = data
 
 # Find areas where most people are injured in NYC motor vehicle collisions
 st.header("Where are the most people injured in NYC?")
-st.markdown("Move the slider to pick the number of people to check\
+st.markdown("Move the slider to pick the number of people to check.  \
             The map shows the spots where most people are injured")
 injured_people = st.slider("Number of people injured in collisions", 0, 19)
 # use pandas instead to get the maximum number of injured people
