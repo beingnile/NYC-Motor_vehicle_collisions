@@ -10,7 +10,7 @@ import streamlit as st
 import tarfile
 
 
-@st.cache(persist=True)
+@st.cache_data(persist=True)
 def uncompress():
     with tarfile.open("Motor_Vehicle_Collisions_-_Crashes.csv.tar.gz") as f:
         f.extractall(".")
