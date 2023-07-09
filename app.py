@@ -18,7 +18,6 @@ def uncompress():
 
 uncompress()
 DATA_URL = ("Motor_Vehicle_Collisions_-_Crashes.csv")
-#DATA_URL = ("https://data.cityofnewyork.us/resource/h9gi-nx95.json")
 st.title("Motor Vehicle Collisions in New York City")
 st.markdown("This is a Streamlit dashboard that can be used \
             to analyze motor vehicle collisions in NYC")
@@ -35,10 +34,13 @@ def load_data(nrows):
         nrows: The number of rows to load
     """
     data = pd.read_csv(DATA_URL,
-                        nrows=nrows,
-                        parse_dates=[['CRASH_DATE', 'CRASH_TIME']])
+                       nrows=nrows,
+                       parse_dates=[['CRASH_DATE', 'CRASH_TIME']])
     data.dropna(subset=['LATITUDE', 'LONGITUDE'], inplace=True)
-    lowercase = lambda x: str(x).lower()
+
+    def to_lower(x):
+        return str(x).lower()
+    lowercase = to_lower
     data.rename(lowercase, axis='columns', inplace=True)
     data.rename(columns={'crash_date_crash_time': 'date/time'}, inplace=True)
     return data
