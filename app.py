@@ -14,26 +14,10 @@ from datetime import datetime
 # Page configuration
 st.set_page_config(
     page_title="NYC Motor Vehicle Collisions Dashboard",
+    page_icon="🚗",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# Custom CSS for better styling
-st.markdown("""
-    <style>
-    .metric-card {
-        background-color: #f0f2f6;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #ff4b4b;
-    }
-    .stMetric {
-        background-color: #f0f2f6;
-        padding: 15px;
-        border-radius: 5px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 
 @st.cache_data(persist=True, show_spinner=False)
@@ -144,9 +128,9 @@ def display_kpis(kpis):
 
     col5, col6 = st.columns(2)
     with col5:
-        st.info(f"🕐 **Most Dangerous Hour:** {kpis['dangerous_hour']}:00 - {kpis['dangerous_hour']+1}:00")
+        st.info(f"**Most Dangerous Hour:** {kpis['dangerous_hour']}:00 - {kpis['dangerous_hour']+1}:00")
     with col6:
-        st.info(f"📅 **Most Dangerous Day:** {kpis['dangerous_day']}")
+        st.info(f"**Most Dangerous Day:** {kpis['dangerous_day']}")
 
 
 def create_time_series_chart(data):
@@ -206,14 +190,14 @@ def main():
     uncompress()
 
     # Header
-    st.title("🚗 NYC Motor Vehicle Collisions Dashboard")
+    st.title("NYC Motor Vehicle Collisions Dashboard")
     st.markdown("""
     This interactive dashboard analyzes motor vehicle collisions in New York City.
     Explore patterns, identify dangerous locations, and understand collision trends.
     """)
 
     # Sidebar configuration
-    st.sidebar.header("⚙️ Configuration")
+    st.sidebar.header("Configuration")
     nrows = st.sidebar.number_input(
         "Number of rows to load",
         min_value=1000,
@@ -229,12 +213,12 @@ def main():
         original_data = data.copy()
 
     # Calculate and display KPIs
-    st.header("📊 Key Performance Indicators")
+    st.header("Key Performance Indicators")
     kpis = calculate_kpis(data)
     display_kpis(kpis)
 
     # Time-based analysis
-    st.header("📈 Collision Trends Over Time")
+    st.header("Collision Trends Over Time")
     tab1, tab2, tab3 = st.tabs(["Daily Trends", "Hourly Distribution", "Weekly Distribution"])
 
     with tab1:
@@ -249,7 +233,7 @@ def main():
     st.markdown("---")
 
     # Geographic analysis - Injuries
-    st.header("🗺️ Where are the most people injured in NYC?")
+    st.header("Where are the most people injured in NYC?")
     st.markdown("Use the slider to filter locations by minimum number of injuries.")
 
     col1, col2 = st.columns([2, 1])
@@ -296,7 +280,7 @@ def main():
     st.markdown("---")
 
     # Time-based geographic analysis
-    st.header("🕐 Collisions by Time of Day")
+    st.header("Collisions by Time of Day")
     st.markdown("Explore collision patterns throughout the day.")
 
     col1, col2 = st.columns([2, 1])
@@ -358,7 +342,7 @@ def main():
     st.markdown("---")
 
     # Dangerous streets analysis
-    st.header("⚠️ Top 5 Most Dangerous Streets")
+    st.header("Top 5 Most Dangerous Streets")
     st.markdown("Identify the most dangerous streets by affected population type.")
 
     select = st.selectbox(
@@ -390,7 +374,7 @@ def main():
     st.markdown("---")
 
     # Contributing factors analysis
-    st.header("🔍 Contributing Factors Analysis")
+    st.header("Contributing Factors Analysis")
     if 'contributing_factor_vehicle_1' in original_data.columns:
         factors = (original_data['contributing_factor_vehicle_1']
                   .value_counts()
@@ -410,13 +394,13 @@ def main():
 
     # Raw data viewer
     st.markdown("---")
-    with st.expander("🔍 View Raw Data"):
+    with st.expander("View Raw Data"):
         st.dataframe(original_data, use_container_width=True)
 
         # Download button
         csv = original_data.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="📥 Download Data as CSV",
+            label="Download Data as CSV",
             data=csv,
             file_name=f'nyc_collisions_{datetime.now().strftime("%Y%m%d")}.csv',
             mime='text/csv',
