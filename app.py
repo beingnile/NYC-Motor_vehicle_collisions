@@ -253,7 +253,7 @@ def main():
     if len(q) > 0:
         midpoint = (np.average(q['latitude']), np.average(q['longitude']))
 
-        st.pydeck_chart(pdk.Deck(
+        st.write(pdk.Deck(
             map_style="mapbox://styles/mapbox/light-v9",
             initial_view_state={
                 'latitude': midpoint[0],
@@ -297,7 +297,7 @@ def main():
     if len(hour_data) > 0:
         midpoint = (np.average(hour_data['latitude']), np.average(hour_data['longitude']))
 
-        st.pydeck_chart(pdk.Deck(
+        st.write(pdk.Deck(
             map_style="mapbox://styles/mapbox/light-v9",
             initial_view_state={
                 "latitude": midpoint[0],
@@ -411,7 +411,7 @@ def main():
     st.markdown("""
     <div style='text-align: center; color: #666;'>
         <p>Data source: NYC Open Data - Motor Vehicle Collisions</p>
-        <p>Dashboard built with Streamlit | Last updated: {}</p>
+        <p>Built by Nile | Last updated: {}</p>
     </div>
     """.format(datetime.now().strftime("%Y-%m-%d")), unsafe_allow_html=True)
 
