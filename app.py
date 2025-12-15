@@ -51,9 +51,9 @@ data = data[(data['date/time'] >= pd.to_datetime(date_start)) &
 if not data.empty:
     col1, col2, col3, col4 = st.columns(4)
     total_collisions = len(data)
-    avg_injuries = data['number_of_persons_injured'].mean()
-    peak_hour = data['date/time'].dt.hour.mode()[0]
-    injury_rate = (data['number_of_persons_injured'] > 0).mean() * 100
+    avg_injuries = data['number of persons injured'].mean()
+    peak_hour = data['date/time'].dt.hour.mode().iloc[0]
+    injury_rate = (data['number of persons injured'] > 0).mean() * 100
 
     with col1:
         st.metric("Total Collisions", f"{total_collisions:,}")
@@ -68,7 +68,7 @@ if not data.empty:
 st.header("Where are the most people injured in NYC?")
 st.markdown("Move the slider to pick the number of people to check. The map shows the spots where most people are injured")
 injured_people = st.slider("Number of people injured in collisions", 0, 19)
-q = data.query("number_of_persons_injured >= @injured_people")[["latitude", "longitude"]]
+q = data.query("`number of persons injured` >= @injured_people")[["latitude", "longitude"]]
 midpoint = (np.average(q['latitude']), np.average(q['longitude']))
 
 st.pydeck_chart(pdk.Deck(
@@ -144,19 +144,19 @@ select = st.selectbox('Affected type of people',
                       ['Pedestrians', 'Cyclists', 'Motorists'])
 
 if select == 'Pedestrians':
-    st.dataframe(original_data.query("number_of_pedestrians_injured >= 1")
-             [["on_street_name", "number_of_pedestrians_injured"]]
-             .sort_values(by=['number_of_pedestrians_injured'],
+    st.dataframe(original_data.query("`number of pedestrians injured` >= 1")
+             [["on street name", "`number of pedestrians injured`"]]
+             .sort_values(by=['`number of pedestrians injured`'],
              ascending=False).dropna(how='any')[:5])
 elif select == 'Cyclists':
-    st.dataframe(original_data.query("number_of_cyclist_injured >= 1")
-             [["on_street_name", "number_of_cyclist_injured"]]
-             .sort_values(by=['number_of_cyclist_injured'],
+    st.dataframe(original_data.query("`number of cyclists injured` >= 1")
+             [["on street name", "`number of cyclists injured`"]]
+             .sort_values(by=['`number of cyclists injured`'],
              ascending=False).dropna(how='any')[:5])
 else:
-    st.dataframe(original_data.query("number_of_motorist_injured >= 1")
-             [["on_street_name", "number_of_motorist_injured"]]
-             .sort_values(by=['number_of_motorist_injured'],
+    st.dataframe(original_data.query("`number of motorists injured` >= 1")
+             [["on street name", "`number of motorists injured`"]]
+             .sort_values(by=['`number of motorists injured`'],
              ascending=False).dropna(how='any')[:5])
 
 
