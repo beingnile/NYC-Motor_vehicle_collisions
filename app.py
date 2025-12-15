@@ -14,7 +14,6 @@ from datetime import datetime
 # Page configuration
 st.set_page_config(
     page_title="NYC Motor Vehicle Collisions Dashboard",
-    page_icon="🚗",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -251,10 +250,29 @@ def main():
     q = data.query("injured_persons >= @injured_people")[["latitude", "longitude"]]
 
     if len(q) > 0:
-        # Rename columns for st.map compatibility
-        map_data = q.dropna(how="any")
-        map_data = map_data.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
-        st.map(map_data, zoom=11)
+        midpoint = (np.average(q['latitude']), np.average(q['longitude']))
+
+        st.write(pdk.Deck(
+            map_style="mapbox://styles/mapbox/light-v9",
+            initial_view_state={
+                'latitude': midpoint[0],
+                'longitude': midpoint[1],
+                'zoom': 11,
+                'pitch': 50,
+            },
+            layers=[
+                pdk.Layer(
+                    'ScatterplotLayer',
+                    q.dropna(how="any"),
+                    pickable=True,
+                    radius_scale=6,
+                    radius_min_pixels=6,
+                    radius_max_pixels=100,
+                    get_fill_color=[255, 140, 0],
+                    get_position=['longitude', 'latitude'],
+                ),
+            ],
+        ))
     else:
         st.warning("No collisions found with the selected criteria.")
 
