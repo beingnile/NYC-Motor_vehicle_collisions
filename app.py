@@ -2,8 +2,6 @@
 Motor vehicle collisions in New York City
 """
 
-"""Enhanced Streamlit dashboard for analyzing Motor Vehicle Collisions in New York City"""
-
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -253,29 +251,8 @@ def main():
     q = data.query("injured_persons >= @injured_people")[["latitude", "longitude"]]
 
     if len(q) > 0:
-        midpoint = (np.average(q['latitude']), np.average(q['longitude']))
-
-        st.write(pdk.Deck(
-            map_style="mapbox://styles/mapbox/light-v9",
-            initial_view_state={
-                'latitude': midpoint[0],
-                'longitude': midpoint[1],
-                'zoom': 11,
-                'pitch': 50,
-            },
-            layers=[
-                pdk.Layer(
-                    'ScatterplotLayer',
-                    q.dropna(how="any"),
-                    pickable=True,
-                    radius_scale=6,
-                    radius_min_pixels=6,
-                    radius_max_pixels=100,
-                    get_fill_color=[255, 140, 0],
-                    get_position=['longitude', 'latitude'],
-                ),
-            ],
-        ))
+        # Use Streamlit's native map (simpler and more compatible)
+        st.map(q.dropna(how="any"), zoom=11)
     else:
         st.warning("No collisions found with the selected criteria.")
 
@@ -297,29 +274,8 @@ def main():
     st.markdown(f"**Vehicle collisions between {hour}:00 and {(hour + 1) % 24}:00**")
 
     if len(hour_data) > 0:
-        midpoint = (np.average(hour_data['latitude']), np.average(hour_data['longitude']))
-
-        st.write(pdk.Deck(
-            map_style="mapbox://styles/mapbox/light-v9",
-            initial_view_state={
-                "latitude": midpoint[0],
-                "longitude": midpoint[1],
-                "zoom": 11,
-                "pitch": 50,
-            },
-            layers=[
-                pdk.Layer(
-                    "HexagonLayer",
-                    data=hour_data[['date/time', 'latitude', 'longitude']],
-                    get_position=['longitude', 'latitude'],
-                    radius=100,
-                    extruded=True,
-                    pickable=True,
-                    elevation_scale=4,
-                    elevation_range=[0, 1000],
-                ),
-            ],
-        ))
+        # Use Streamlit's native map (simpler and more compatible)
+        st.map(hour_data[['latitude', 'longitude']].dropna(how="any"), zoom=11)
 
         # Minute breakdown
         st.subheader(f"Minute-by-minute breakdown: {hour}:00 - {(hour + 1) % 24}:00")
