@@ -2,6 +2,8 @@
 Motor vehicle collisions in New York City
 """
 
+"""Enhanced Streamlit dashboard for analyzing Motor Vehicle Collisions in New York City"""
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -376,7 +378,14 @@ def main():
     # Contributing factors analysis
     st.header("Contributing Factors Analysis")
     if 'contributing_factor_vehicle_1' in original_data.columns:
-        factors = (original_data['contributing_factor_vehicle_1']
+        # Filter out unspecified causes
+        filtered_factors = original_data[
+            ~original_data['contributing_factor_vehicle_1'].str.contains(
+                'Unspecified', case=False, na=False
+            )
+        ]
+
+        factors = (filtered_factors['contributing_factor_vehicle_1']
                   .value_counts()
                   .head(10))
 
@@ -384,7 +393,7 @@ def main():
             x=factors.values,
             y=factors.index,
             orientation='h',
-            title='Top 10 Contributing Factors',
+            title='Top 10 Contributing Factors (Excluding Unspecified)',
             labels={'x': 'Number of Collisions', 'y': 'Contributing Factor'},
             color=factors.values,
             color_continuous_scale='Oranges'
