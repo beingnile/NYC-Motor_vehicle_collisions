@@ -250,30 +250,13 @@ def main():
 
     q = data.query("injured_persons >= @injured_people")[["latitude", "longitude"]]
 
-    midpoint = (np.average(q['latitude']), np.average(q['longitude']))
-# st.map(q.dropna(how="any"), zoom=13)
-
-    st.write(pdk.Deck(
-            map_style="mapbox://styles/mapbox/light-v9",
-            initial_view_state={
-                'latitude': midpoint[0],
-                'longitude': midpoint[1],
-                'zoom': 11,
-                'pitch': 50,
-            },
-            layers=[
-                pdk.Layer(
-                    'ScatterplotLayer',
-                    q.dropna(how="any"),
-                    pickable=True,
-                    radius_scale=6,
-                    radius_min_pixels=6,
-                    radius_max_pixels=100,
-                    get_fill_color=[255, 140, 0],
-                    get_position=['longitude', 'latitude'],
-                ),
-            ],
-    ))
+    if len(q) > 0:
+        # Rename columns for st.map compatibility
+        map_data = q.dropna(how="any")
+        map_data = map_data.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
+        st.map(map_data, zoom=11)
+    else:
+        st.warning("No collisions found with the selected criteria.")
 
     st.markdown("---")
 
@@ -292,44 +275,31 @@ def main():
 
     st.markdown(f"**Vehicle collisions between {hour}:00 and {(hour + 1) % 24}:00**")
 
-    midpoint = (np.average(data['latitude']), np.average(data['longitude']))
+    if len(hour_data) > 0:
+        # Rename columns for st.map compatibility
+        map_data = hour_data[['latitude', 'longitude']].dropna(how="any")
+        map_data = map_data.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
+        st.map(map_data, zoom=11)
 
-    st.write(pdk.Deck(
-        map_style="mapbox://styles/mapbox/light-v9",
-        initial_view_state={
-            "latitude": midpoint[0],
-            "longitude": midpoint[1],
-            "zoom": 11,
-            "pitch": 50,
-        },
-        layers=[
-            pdk.Layer(
-                "HexagonLayer",
-                data=data[['date/time', 'latitude', 'longitude']],
-                get_position=['longitude', 'latitude'],
-                radius=100,
-                extruded=True,
-                pickable=True,
-                elevation_scale=4,
-                elevation_range=[0, 1000],
-            ),
-        ],
-    ))
-
-    st.subheader("Minute breakdown between %i:00 \
-                 and %i:00" % (hour, (hour + 1) % 24))
-    filtered = data[
-        (data['date/time'].dt.hour >= hour) &
-        (data['date/time'].dt.hour < (hour + 1))
-    ]
-    hist = np.histogram(filtered['date/time'].dt.minute, bins=60, range=(0, 60))[0]
-    chart_data = pd.DataFrame({'minute': range(60), 'crashes': hist})
-    fig = px.bar(chart_data,
-                 x='minute',
-                 y='crashes',
-                 hover_data=['minute', 'crashes'],
-                 height=400)
-    st.write(fig)
+        # Minute breakdown
+        st.subheader(f"Minute-by-minute breakdown: {hour}:00 - {(hour + 1) % 24}:00")
+        filtered = original_data[
+            (original_data['hour'] >= hour) &
+            (original_data['hour'] < (hour + 1))
+        ]
+        hist = np.histogram(filtered['date/time'].dt.minute, bins=60, range=(0, 60))[0]
+        chart_data = pd.DataFrame({'minute': range(60), 'crashes': hist})
+        fig = px.bar(
+            chart_data,
+            x='minute',
+            y='crashes',
+            hover_data=['minute', 'crashes'],
+            height=400,
+            labels={'crashes': 'Number of Crashes', 'minute': 'Minute'}
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.warning("No collisions found for this hour.")
 
     st.markdown("---")
 
