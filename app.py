@@ -1,7 +1,16 @@
 """
 NYC Motor Vehicle Collisions Dashboard
 A Streamlit dashboard that analyzes motor vehicle collisions in New York City
-ta
+"""
+
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import pydeck as pdk
+import streamlit as st
+import tarfile
+
+@st.cache_data
 def uncompress():
     with tarfile.open("Motor_Vehicle_Collisions_-_Crashes.csv.tar.gz") as f:
         f.extractall(".")
